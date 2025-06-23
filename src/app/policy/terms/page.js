@@ -13,9 +13,9 @@ export default function Copyright() {
             </div>
             <div className="mt-10 text-lg space-y-5 pb-8 max-sm:mr-4 max-sm:ml-4">
               <p>
-                BookMyAssets or one of its affiliates (collectively,
-                “BookMyAssets”) hosts this website. The terms and conditions of
-                any other agreement you might have with BookMyAssets are
+                Dholera Consultants or one of its affiliates (collectively,
+                “Dholera Consultants”) hosts this website. The terms and conditions of
+                any other agreement you might have with Dholera Consultants are
                 unaffected by this Agreement in any way. This Agreement and the
                 Site are subject to modification at any moment. If we decide to
                 alter the Agreement, we will update the date and publish a new

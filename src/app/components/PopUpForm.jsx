@@ -10,7 +10,7 @@ export default function PopupForm({
   title,
   thankYouTitle = "Thank You!",
   thankYouMessage = "Your request has been submitted successfully.",
-  source = "BookMyAssets google ads",
+  source = "Dholera Consultants google ads",
 }) {
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({ fullName: "", phone: "" });
@@ -197,8 +197,8 @@ useEffect(() => {
               phone: formData.phone,
               source: source,
             },
-            source: "BookMyAssets Google Ads",
-            tags: ["Dholera Investment", "Website Lead", "BookMyAssets"],
+            source: "Dholera Consultants Google Ads",
+            tags: ["Dholera Investment", "Website Lead", "Dholera Consultants"],
             recaptchaToken: token,
           }),
         }
@@ -219,7 +219,7 @@ useEffect(() => {
         setTimeout(() => {
           setShowThankYou(false);
           handleClose();
-          router.push(`/more-info/thankyou`);
+          router.push(`more-info`);
         }, 3000);
       } else {
         throw new Error("Error submitting form");

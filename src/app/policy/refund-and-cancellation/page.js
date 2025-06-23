@@ -47,8 +47,8 @@ export default function Copyright() {
                 </p>
                 <p>
                   For any further assistance please fill out the form to schedule a free consultation with our real estate experts.{" "}
-                  <a href="mailto:info@bookmyassets.com" className="text-blue-400 underline">
-                    info@bookmyassets.com
+                  <a href="mailto:info@Dholera Consultants.com" className="text-blue-400 underline">
+                    info@Dholera Consultants.com
                   </a>{" "}
                   or call us at{" "}
                   <a href="tel:+918130371647" className="text-blue-400 underline">

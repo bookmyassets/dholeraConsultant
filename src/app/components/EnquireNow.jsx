@@ -13,7 +13,7 @@ export default function Enquire({
   buttonName,
   thankYouTitle = "Thank You!",
   thankYouMessage = "Your request has been submitted successfully.",
-  source = "BookMyAssets google ads",
+  source = "Dholera Consultants google ads",
   ids
 }) {
   const [isLoading, setIsLoading] = useState(false);
@@ -138,8 +138,8 @@ const onRecaptchaSuccess = async (token) => {
             phone: formData.phone,
             source: source,
           },
-          source: "BookMyAssets Google Ads",
-          tags: ["Dholera Investment", "Website Lead", "BookMyAssets"],
+          source: "Dholera Consultants Google Ads",
+          tags: ["Dholera Investment", "Website Lead", "Dholera Consultants"],
           recaptchaToken: token,
         }),
       }
@@ -165,7 +165,7 @@ const onRecaptchaSuccess = async (token) => {
         const currentPath = pathname || window.location.pathname;
         
         // Push to thank-you route with return URL
-        router.push(`/more-info/thankyou`);
+        router.push(`more-info`);
       }, 2000);
     } else {
       throw new Error("Error submitting form");
