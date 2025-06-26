@@ -47,12 +47,12 @@ export default function Copyright() {
                 </p>
                 <p>
                   For any further assistance please fill out the form to schedule a free consultation with our real estate experts.{" "}
-                  <a href="mailto:info@Dholera Consultants.com" className="text-blue-400 underline">
-                    info@Dholera Consultants.com
+                  <a href="mailto:info@dholeraconsultants.com" className="text-blue-400 underline">
+                    info@dholeraconsultants.com
                   </a>{" "}
                   or call us at{" "}
-                  <a href="tel:+918130371647" className="text-blue-400 underline">
-                    +91 81 3037 1647
+                  <a href="tel:+919971858408" className="text-blue-400 underline">
+                    +91 99 71 85 8408
                   </a>.
                 </p>
               </div>
