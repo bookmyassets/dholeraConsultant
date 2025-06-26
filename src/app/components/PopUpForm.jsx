@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { FaUser, FaPhoneAlt, FaClock, FaMapMarkerAlt } from "react-icons/fa";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import logo from "@/assests/dholeraConsultant.png";
+import logo from "@/assests/dholeraConsultant.webp";
 import { useRouter, usePathname } from "next/navigation"
 
 export default function PopupForm({
@@ -376,8 +376,8 @@ useEffect(() => {
                 <Image
                   src={logo}
                   alt="Logo"
-                  width={50}
-                  height={50}
+                  width={70}
+                  height={70}
                   className="rounded-full"
                 />
                 {/* Shine effect */}
