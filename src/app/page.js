@@ -13,12 +13,14 @@ import TestimonialPagination from "./body/Testimonials";
 import Ammenties from "./body/Ammenties";
 import EndSection from "./body/EndSection";
 import PopupForm from "./components/PopUpForm";
+import Navbar from "./components/Navbar";
 
 export default function Page() {
   const [showForm, setShowForm] = useState(false);
 
   return (
     <>
+    <Navbar/>
       <div>
         <section>
           <LandingPage

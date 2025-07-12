@@ -1,5 +1,5 @@
 import React from "react";
-import Navbar from "./components/Navbar";
+
 import "./globals.css";
 import Footer from "./body/Footer";
 import FloatingButtons from "./components/whatsapp";
@@ -11,7 +11,7 @@ export default function RootLayout({ children }) {
       <head>
       </head>
       <body>
-        <Navbar />
+       
         {children}
         <Footer />
         <FloatingButtons />
