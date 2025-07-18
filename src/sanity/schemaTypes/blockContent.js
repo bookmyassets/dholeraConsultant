@@ -130,6 +130,14 @@ export default {
         }
       ]
     },
+    // Table block
+    {
+      type: "table",
+      title: "Table",
+      options: {
+        spellCheck: true,
+      },
+    },
     // HTML Table block - now properly defined
     {
   type: 'object',
