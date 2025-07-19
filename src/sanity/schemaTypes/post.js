@@ -47,9 +47,8 @@ export default {
       description: 'Which website this post belongs to',
       options: {
         list: [
-          { title: 'Dholera Times', value: 'dholera-times' },
-          { title: 'BookMyAssets', value: 'bookmyassets' },
-          { title: 'Dholera Insider', value: 'dholera-insider' },
+          { title: 'Top Deals Dholera', value: 'top-deals-dholera' },
+          { title: 'Dholera Consultants', value: 'dholera-consultants' },
         ],
       },
       validation: Rule => Rule.required(),
