@@ -1,321 +1,155 @@
-import { client } from "./client";
-import { NextResponse } from "next/server";
+import { client } from './client';
 
-// Fetch all blog posts
-/* Projects */
+const site = "dholera-consultants";
+
+/* Blog Posts */
 export async function getPosts() {
-  const query = `*[_type == "post" && "Project" in categories[]->title && author-> name == "Dholera Times" ]{
-    _id,
-    title,
-    slug,
-    mainImage,
-    publishedAt,
-    body,
-    author->{name, image},
-    categories[]->{title, _id}
+  const query = `*[_type == "post" && "Project" in categories[]->title && site == $site ]{
+    _id, title, slug, mainImage, publishedAt, body, author->{name, image}, categories[]->{title}
   }`;
-  const posts = await client.fetch(query, {}, { cache: 'no-store' }); // Disables caching
-  return posts;
+  return await client.fetch(query, { site }, { cache: 'no-store' });
 }
 
-export async function getProjects() {
-  const query = `*[_type == "post" && "Project" in categories[]->title && !("Sold Out" in categories[]->title) && author->name == "Dholera Times"]{
-    _id,
-    title,
-    slug,
-    mainImage,
-    publishedAt,
-    body,
-    description,
-    author->{name, image},
-    categories[]->{title, _id},
-    "category": categories[0]->title // Get the first category for easy access
+export async function getSub() {
+  const query = `*[_type == "post" && "Sub-Project" in categories[]->title && author->name == "DC" && site == $site]{
+    _id, title, slug, mainImage, publishedAt, body, author->{name, image}, categories[]->{title}
   }`;
-  
-  const posts = await client.fetch(query, {}, { cache: 'no-store' });
-  return posts;
+  return await client.fetch(query, { site }, { cache: 'no-store' });
 }
-/* Blogs */
+
 export async function getblogs() {
-  const query = `*[_type == "post" && "Blog" in categories[]->title && author-> name == "Dholera Times" ]{
-    _id,
-    title,
-    slug,
-    mainImage,
-    publishedAt,
-    body,
-    author->{name, image},
-    categories[]->{title, _id}
+  const query = `*[_type == "post" && "Blog" in categories[]->title && author->name == "DC" && site == $site]{
+    _id, title, slug, mainImage, publishedAt, body, author->{name, image}, categories[]->{title}
   }`;
-  const posts = await client.fetch(query, {}, { cache: 'no-store' }); // Disables caching
-  return posts;
+  return await client.fetch(query, { site }, { cache: 'no-store' });
 }
 
-/* News */
-export async function getNews() {
-  const query = `*[_type == "post" && "News" in categories[]->title && author-> name == "Dholera Times" ]{
-    _id,
-    title,
-    slug,
-    mainImage,
-    publishedAt,
-    body,
-    author->{name, image},
-    categories[]->{title, _id}
-  }`;
-  const posts = await client.fetch(query, {}, { cache: 'no-store' }); // Disables caching
-  return posts;
-}
-
-/* Updates */
 export async function getUpdates() {
-  const query = `*[_type == "post" && "Updates" in categories[]->title && author-> name == "Dholera Times" ]{
-    _id,
-    title,
-    slug,
-    mainImage,
-    publishedAt,
-    body,
-    author->{name, image},
-    categories[]->{title, _id}
+  const query = `*[_type == "post" && "Updates" in categories[]->title && author->name == "DC" && site == $site]{
+    _id, title, slug, mainImage, publishedAt, body, author->{name, image}, categories[]->{title}
   }`;
-  const posts = await client.fetch(query, {}, { cache: 'no-store' }); // Disables caching
-  return posts;
+  return await client.fetch(query, { site }, { cache: 'no-store' });
 }
 
-// Fetch a single blog post by slug (No Cache)
-export async function getPostBySlug(slug, site) {
-  const query = `*[
-    _type == "post" &&
-    slug.current == $slug &&
-    site == $site
-  ][0]{
-    _id,
-    title,
-    metaTitle,
-    metaDescription,
-    "keywords": keywords[]->title,
-    slug,
-    mainImage {
-      asset->{ _id, _ref, url, metadata { dimensions, lqip } },
-      alt,
-      caption,
-      url
-    },
-    publishedAt,
-    _createdAt,
-    body[]{
-      ...,
-      _type == "image" => {
-        ...,
-        asset->{ _id, _ref, url, metadata { dimensions, lqip } },
-        "url": url
-      },
-      markDefs[]{ ..., _type == "link" => { "href": @.href } }
-    },
-    author->{ name, image },
-    categories[]->{ title, _id },
-    readingTime
+export async function getEvents() {
+  const query = `*[_type == "post" && "Events" in categories[]->title && author->name == "DC" && site == $site]{
+    _id, title, slug, mainImage, publishedAt, body, author->{name, image}, categories[]->{title}
   }`;
-
-  return await client.fetch(query, { slug, site });
+  return await client.fetch(query, { site }, { cache: 'no-store' });
 }
 
+/* Project Info */
+export async function projectInfo() {
+  const query = `*[_type == "post" && "project-Info" in categories[]->title && author->name == "DC" && site == $site]{
+    _id, title, slug, mainImage, publishedAt, body, author->{name, image}, categories[]->{title}
+  }`;
+  return await client.fetch(query, { site }, { cache: 'no-store' });
+}
 
-/* Inventory & Brochure */
+export async function projectInfoX() {
+  const posts = await projectInfo();
+  return { relatedProjects: posts };
+}
+
+/* Documents */
 export async function Inventory() {
-  const query = `*[_type == "post" && author->name == "Dholera Times" && "Project" in categories[]->title] | order(publishedAt desc) {
-    _id,
-    title,
-    publishedAt,
-    mainImage,
+  const query = `*[_type == "post" && author->name == "DC" && "Sub-Project" in categories[]->title && site == $site] | order(publishedAt desc) {
+    _id, title, publishedAt, mainImage,
     "pdfUrl": coalesce(pdfFile.asset->url, null),
     "categories": coalesce(categories[]->title, []),
     "author": coalesce(author->name, "Unknown"),
     "isSoldOut": "Sold Out" in categories[]->title
   }`;
 
-  const url = `https://${process.env.NEXT_PUBLIC_SANITY_PROJECT_ID}.api.sanity.io/v2021-06-07/data/query/${process.env.NEXT_PUBLIC_SANITY_DATASET}?query=${encodeURIComponent(query)}`;
-
-  try {
-    const response = await fetch(url, { cache: 'no-store' });
-    const json = await response.json();
-    const posts = json.result || [];
-
-    // Filter to return only posts that have a PDF URL
-    const filteredPosts = posts.filter(post => post.pdfUrl);
-    return filteredPosts;
-  } catch (error) {
-    console.error("Error fetching posts:", error);
-    return [];
-  }
+  const posts = await client.fetch(query, { site }, { cache: 'no-store' });
+  return posts.filter(post => post.pdfUrl);
 }
-
 
 export async function Brochure() {
-  const query = `*[_type == "post" && author->name == "Dholera Times" && "Brochure" in categories[]->title] | order(publishedAt desc) [0..9] {
-      _id,
-      title,
-      publishedAt,
-      mainImage,
-      "pdfUrl": coalesce(pdfFile.asset->url, null),
-      "category": coalesce(categories[]->title, []),
-      "author": coalesce(author->name, "Unknown")
+  const query = `*[_type == "post" && author->name == "DC" && "Brochure" in categories[]->title && site == $site] | order(publishedAt desc) [0..9] {
+    _id, title, publishedAt, mainImage,
+    "pdfUrl": coalesce(pdfFile.asset->url, null),
+    "category": coalesce(categories[]->title, []),
+    "author": coalesce(author->name, "Unknown")
   }`;
 
-  const url = `https://${process.env.NEXT_PUBLIC_SANITY_PROJECT_ID}.api.sanity.io/v2021-06-07/data/query/${process.env.NEXT_PUBLIC_SANITY_DATASET}?query=${encodeURIComponent(query)}`;
-
-  try {
-    const response = await fetch(url, { cache: "no-store" }); // ✅ Cache disabled
-    const json = await response.json();
-    const posts = json.result || [];
-
-    // Filter out posts with no pdfUrl
-    const filteredPosts = posts.filter((post) => post.pdfUrl);
-    return filteredPosts;
-  } catch (error) {
-    console.error("Error fetching posts:", error);
-    return [];
-  }
+  const posts = await client.fetch(query, { site }, { cache: 'no-store' });
+  return posts.filter(post => post.pdfUrl);
 }
 
-/* EVENTS & WEBINAR */
-export async function getEvents() {
-  const query = `*[_type == "event" && author->name == "Dholera Times" && "Upcoming Events" in categories[]->title] | order(publishedAt desc) {
-    _id,
-    eventName,
-    slug,
-    mainImage,
-    publishedAt,
-    description,
-    dateOfEvent,
-    timeOfEvent,
-    location,
-    mapsLink,
-    "eventMaterials": eventMaterials.asset->url,
-    categories[]->{title, _id}
+/* Single Post Fetching */
+export async function getPostBySlug(slug) {
+  const query = `*[_type == "post" && slug.current == $slug && author->name == "DC" && site == $site][0]{
+    _id, title, metaTitle, metaDescription, "keywords": keywords[]->title, slug,
+    mainImage { asset->{ _id, _ref, url, metadata{ dimensions, lqip } }, alt, caption, url },
+    publishedAt, _createdAt,
+    body[]{ ..., _type=="image"=>{..., asset->{ _id, _ref, url, metadata{ dimensions, lqip } }, "url": url }, markDefs[]{..., _type=="link"=>{"href":@.href}} },
+    author->{ name, image }, categories[]->{ title, _id }, readingTime
   }`;
-
-  try {
-    const events = await client.fetch(query, { slug }, { cache: 'no-store' });
-    return events;
-  } catch (error) {
-    console.error("Error fetching events:", error);
-    return [];
-  }
+  return await client.fetch(query, { slug, site }, { cache: 'no-store' });
 }
 
-export async function getWebinar() {
-  const query = `*[_type == "event" && author->name == "Dholera Times" && "Webinar" in categories[]->title] | order(publishedAt desc) {
-    _id,
-    eventName,
-    slug,
-    mainImage,
-    publishedAt,
-    description,
-    dateOfEvent,
-    timeOfEvent,
-    location,
-    mapsLink,
-    "eventMaterials": eventMaterials.asset->url,
-    categories[]->{title, _id}
+export async function getProjectBySlug(slug) {
+  const query = `*[_type == "post" && slug.current == $slug && author->name == "DC" && site == $site][0]{
+    title, metaTitle, metaDescription, keywords, description, body,
+    categories[]->{title}, mainImage, location, investment, returns,
+    "relatedProjects": *[
+      _type == "post" && 
+      author->name == "DC" && 
+      "Sub-Project" in categories[]->title &&
+      site == $site &&
+      !("Sold Out" in categories[]->title) &&
+      slug.current != $slug
+    ]{ title, "slug": slug.current, mainImage }
   }`;
+  return await client.fetch(query, { slug, site }, { cache: 'no-store' });
+}
 
-  try {
-    const events = await client.fetch(query, { slug }, { cache: 'no-store' });
-    return events;
-  } catch (error) {
-    console.error("Error fetching events:", error);
-    return [];
-  }
+export async function getProjectSOBySlug(slug) {
+  const query = `*[_type == "post" && slug.current == $slug && author->name == "DC" && site == $site][0]{
+    title, metaTitle, metaDescription, keywords, description, body,
+    categories[]->{title}, mainImage, location, investment, returns,
+    "relatedProjects": *[
+      _type == "post" && 
+      author->name == "DC" && 
+      "Sub-Project" in categories[]->title &&
+      "Sold Out" in categories[]->title &&
+      site == $site &&
+      slug.current != $slug
+    ]{ title, "slug": slug.current, mainImage }
+  }`;
+  return await client.fetch(query, { slug, site }, { cache: 'no-store' });
 }
 
 export async function getEventBySlug(slug) {
-  const query = `*[_type == "event" && slug.current == $slug][0]{
-    _id,
-    eventName,
-    slug,
-    mainImage,
-    publishedAt,
-    description,
-    dateOfEvent,
-    timeOfEvent,
-    location,
-    mapsLink,
+  const query = `*[_type == "event" && slug.current == $slug && site == $site][0]{
+    _id, eventName, slug, mainImage, publishedAt, description,
+    dateOfEvent, timeOfEvent, location, mapsLink,
     "eventMaterials": eventMaterials.asset->url,
     categories[]->{title, _id}
   }`;
-  const post = await client.fetch(query, { slug }, { cache: 'no-store' });
-  return post;
+  return await client.fetch(query, { slug, site }, { cache: 'no-store' });
 }
 
-export async function getProjectInfo() {
-  const query = `*[_type == "post" && "project-Info" in categories[]->title && author-> name == "Dholera Times" ]{
-    _id,
-    title,
-    slug,
-    mainImage,
-    publishedAt,
-    body,
-    author->{name, image},
-    categories[]->{title, _id}
-  }`;
-  const posts = await client.fetch(query, {}, { cache: 'no-store' }); // Disables caching
-  return posts;
-}
-
-
-export async function getAllProjects() {
-  const query = `*[_type == "post" && "Project" in categories[]->title && author->name == "Dholera Times"]{
-    _id,
-    title,
-    slug,
-    mainImage,
-    publishedAt,
-    body,
-    description,
-    author->{name, image},
-    categories[]->{title, _id},
-    "category": categories[0]->title,
-    "isSoldOut": "Sold Out" in categories[]->title
-  }`;
-  
-  const posts = await client.fetch(query, {}, { cache: 'no-store' });
-  
-  // Sort by category, with Sold Out category at the end
-  const sortedPosts = posts.sort((a, b) => {
-    // First, separate sold out projects to the end
-    if (a.isSoldOut && !b.isSoldOut) return 1;
-    if (!a.isSoldOut && b.isSoldOut) return -1;
-    
-    // If both have same sold out status, sort by category name
-    if (a.isSoldOut === b.isSoldOut) {
-      const categoryA = a.category || '';
-      const categoryB = b.category || '';
-      
-      // Sort categories alphabetically
-      if (categoryA < categoryB) return -1;
-      if (categoryA > categoryB) return 1;
-      
-      // If same category, sort by publishedAt (newest first)
-      return new Date(b.publishedAt) - new Date(a.publishedAt);
-    }
-    
-    return 0;
-  });
-  
-  return sortedPosts;
-}
-
+/* Helper Functions */
 export async function getAllSubProjects() {
-  const query = `
-    *[_type == "post" && "Sub-Project" in categories[]->title] {
-      title,
-      "slug": slug.current,
-      mainImage,
-      categories[]->{title}
-    }
-  `;
-  const posts = await client.fetch(query, {}, { cache: 'no-store' });
-  return posts;
+  const query = `*[_type == "post" && "Sub-Project" in categories[]->title && author->name == "DC" && site == $site]{
+    title, "slug": slug.current, mainImage, categories[]->{title}
+  }`;
+  return await client.fetch(query, { site }, { cache: 'no-store' });
+}
+
+export async function getSubProjects(slug) {
+  const query = `*[_type == "post" && slug.current == $slug && author->name == "DC" && site == $site][0]{
+    title, metaTitle, metaDescription, keywords, description, body,
+    categories[]->{title}, mainImage, location, investment, returns,
+    "relatedProjects": *[
+      _type == "post" && 
+      author->name == "DC" && 
+      "Sub-Project" in categories[]->title && 
+      slug.current != $slug &&
+      site == $site
+    ]{ title, "slug": slug.current, mainImage }
+  }`;
+  return await client.fetch(query, { slug, site }, { cache: 'no-store' });
 }

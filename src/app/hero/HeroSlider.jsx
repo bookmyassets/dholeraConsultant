@@ -1,95 +1,56 @@
+"use client";
 import { useState, useEffect, useRef } from "react";
-import { FaUser, FaPhoneAlt, FaClock, FaMapMarkerAlt } from "react-icons/fa";
+import { FaUser, FaPhoneAlt } from "react-icons/fa";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
+import "swiper/css";
+import "swiper/css/pagination";
 import logo from "../assets/dholeraConsultant.webp";
-import { useRouter, usePathname } from "next/navigation"
 
-export default function PopupForm({
-  onClose,
-  title,
-  thankYouTitle = "Thank You!",
-  thankYouMessage = "Your request has been submitted successfully.",
-  source = "Top Deals Dholera google ads",
-}) {
+export default function LandingPage({ img1, mimg1, openForm }) {
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({ fullName: "", phone: "" });
-  const [showFormPopup, setShowFormPopup] = useState(false);
-  const [showSubmissionSuccess, setShowSubmissionSuccess] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
   const [submissionCount, setSubmissionCount] = useState(0);
   const [lastSubmissionTime, setLastSubmissionTime] = useState(0);
+  const [showFormPopup, setShowFormPopup] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [recaptchaLoaded, setRecaptchaLoaded] = useState(false);
   const [showThankYou, setShowThankYou] = useState(false);
   const recaptchaRef = useRef(null);
   const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
-  const router = useRouter();
-  const pathname = usePathname();
-  const [showForm, setShowForm] = useState(false);
-
-  const [timeLeft, setTimeLeft] = useState(1800);
 
   useEffect(() => {
-    let timer;
+    // Only run on client side
+    if (typeof window !== 'undefined') {
+      // Check localStorage to see if popup was already shown
+      const popupShown = localStorage.getItem('popupShown');
+      
+      if (!popupShown) {
+        const timer = setTimeout(() => {
+          openForm();
+          localStorage.setItem('popupShown', 'true');
+        }, 2000); // 5 seconds
 
-    if (showForm) {
-      setTimeLeft(1800);
-
-      timer = setInterval(() => {
-        setTimeLeft((prev) => {
-          if (prev <= 1) {
-            clearInterval(timer);
-            return 0;
+        const handleScroll = () => {
+          if (window.scrollY > window.innerHeight * 0.05) {
+            openForm();
+            localStorage.setItem('popupShown', 'true');
+            window.removeEventListener('scroll', handleScroll);
+            clearTimeout(timer);
           }
-          return prev - 1;
-        });
-      }, 1000);
+        };
+
+        window.addEventListener('scroll', handleScroll);
+        
+        return () => {
+          window.removeEventListener('scroll', handleScroll);
+          clearTimeout(timer);
+        };
+      }
     }
+  }, [openForm]);
 
-    return () => clearInterval(timer); // Cleanup
-  }, [showForm]);
-
-  const formatTime = (seconds) => {
-    const mins = Math.floor(seconds / 60)
-      .toString()
-      .padStart(2, "0");
-    const secs = (seconds % 60).toString().padStart(2, "0");
-    return `${mins}:${secs}`;
-  };
-
-  const [wasTriggered, setWasTriggered] = useState(false);
-
-  // Parse title to extract price and time info
-  const parseTitle = (title) => {
-    const priceMatch = title.match(/₹([0-9,]+)/);
-    const timeMatch = title.match(/(\d+:\d+:\d+)/);
-    const price = priceMatch ? `₹${priceMatch[1]}` : "₹9250";
-    const timeLeft = timeMatch ? timeMatch[1] : null;
-
-    return {
-      price,
-      timeLeft,
-      mainText: "For This WEEK",
-      subText: ""
-    };
-  };
-
-  const titleInfo = parseTitle(title);
-
-useEffect(() => {
-  if (wasTriggered || submissionCount > 0) return;
-
-  const timer = setTimeout(() => {
-    if (!wasTriggered && !showThankYou && submissionCount === 0) {
-      setShowFormPopup(true);
-      setWasTriggered(true);
-    }
-  }, 100); 
-
-  return () => clearTimeout(timer);
-}, [wasTriggered, submissionCount]);
-
-  // Handle close function
   const handleClose = () => {
     if (onClose && typeof onClose === 'function') {
       onClose();
@@ -169,7 +130,7 @@ useEffect(() => {
       setSubmissionCount(0);
       localStorage.setItem("formSubmissionCount", "0");
       localStorage.setItem("lastSubmissionTime", now.toString());
-    } else if (submissionCount >= 3) {
+    } else if (submissionCount >= 30) {
       setErrorMessage(
         "You have reached the maximum submission limit. Try again after 24 hours."
       );
@@ -178,6 +139,7 @@ useEffect(() => {
 
     return true;
   };
+
 
   const onRecaptchaSuccess = async (token) => {
     try {
@@ -195,7 +157,7 @@ useEffect(() => {
             fields: {
               name: formData.fullName,
               phone: formData.phone,
-              source: source,
+              source: "Top Deals Dholera Google Ads",
             },
             source: "Top Deals Dholera Google Ads",
             tags: ["Dholera Investment", "Website Lead", "Top Deals Dholera"],
@@ -206,7 +168,7 @@ useEffect(() => {
 
       if (response.ok) {
         setFormData({ fullName: "", phone: "" });
-        setShowSubmissionSuccess(true);
+        setShowPopup(true);
         setSubmissionCount((prev) => {
           const newCount = prev + 1;
           localStorage.setItem("formSubmissionCount", newCount.toString());
@@ -218,9 +180,14 @@ useEffect(() => {
         setShowThankYou(true);
         setTimeout(() => {
           setShowThankYou(false);
-          handleClose();
-          router.push('/');
-        }, 3000);
+          setShowFormPopup(false);
+
+          // Get current pathname for return URL
+          const currentPath = pathname || window.location.pathname;
+
+          // Push to thank-you route with return URL
+          router.push(`/thankyou`);
+        }, 2000);
       } else {
         throw new Error("Error submitting form");
       }
@@ -236,7 +203,6 @@ useEffect(() => {
       }
     }
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -274,7 +240,7 @@ useEffect(() => {
   // Handle backdrop click
   const handleBackdropClick = (e) => {
     if (e.target === e.currentTarget) {
-      handleClose();
+      setShowFormPopup(false);
     }
   };
 
@@ -283,8 +249,88 @@ useEffect(() => {
     e.stopPropagation();
   };
 
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2,
+        delayChildren: 0.3,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, x: -30 },
+    visible: {
+      opacity: 1,
+      x: 0,
+      transition: {
+        duration: 0.6,
+        ease: "easeOut",
+      },
+    },
+  };
+
+  const buttonVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        delay: 0.6,
+        duration: 0.5,
+      },
+    },
+    hover: {
+      scale: 1.05,
+      backgroundColor: "#FDB913",
+      color: "#000",
+      transition: { duration: 0.3 },
+    },
+  };
+
   return (
-    <>
+    <div id="hero" className="relative h-[75vh] md:h-[70vh]">
+      {/* Background Images */}
+      <div className="">
+        {/* Desktop Image */}
+        <div className="absolute inset-0 hidden lg:block">
+          <Image src={img1} alt="Investment Opportunity" className="w-full" priority />
+          <div className="absolute inset-0 bg-black opacity-20"></div> {/* Black Overlay */}
+        </div>
+
+        {/* Mobile Image */}
+        <div className="absolute inset-0 block lg:hidden">
+          <Image src={mimg1} alt="Investment Opportunity Mobile" fill className="w-full" priority />
+          <div className="absolute inset-0 "></div> {/* Black Overlay */}
+        </div>
+
+        {/* Text Overlay */}
+        <div className="absolute max-w-7xl mx-auto inset-0 z-10 font-semibold text-xl md:text-5xl max-sm:translate-y-40 text-gray-200 flex lg:items-center justify-center lg:justify-start">
+          <p className="text-center md:text-left px-4 md:px-0">
+            Premium, Registry-Ready <br /> Plot in Dholera <br /> Built for Smart Investors
+          </p>
+        </div>
+      </div>
+
+
+      {/* Contact Us Button - Bottom-Centered & Responsive */}
+      <div className="absolute bottom-0 left-0 right-0 z-10 flex justify-center items-center pb-2 max-sm:pb-0">
+        <motion.div initial="hidden" animate="visible" variants={containerVariants}>
+          <motion.div variants={buttonVariants}>
+            <motion.button
+              whileHover="hover"
+              onClick={() => setShowFormPopup(true)}
+              className="font-semibold px-8 py-3 border border-white rounded-full bg-black text-yellow-400 hover:bg-yellow-400 hover:text-black text-sm md:text-base shadow-lg"
+            >
+              Contact Us
+            </motion.button>
+          </motion.div>
+        </motion.div>
+      </div>
+
       {/* Thank You Page */}
       <AnimatePresence>
         {showThankYou && (
@@ -292,7 +338,7 @@ useEffect(() => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-gray-900 flex justify-center items-center z-[1001]"
+            className="fixed inset-0 bg-gradient-to-br from-green-900 to-green-800 flex justify-center items-center z-[1001]"
           >
             <motion.div
               initial={{ scale: 0.5, y: 50 }}
@@ -306,10 +352,10 @@ useEffect(() => {
                 transition={{ delay: 0.2 }}
                 className="mb-6"
               >
-                <div className="w-24 h-24 bg-[#FDB913] rounded-full flex items-center justify-center mx-auto">
+                <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mx-auto">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    className="h-12 w-12 text-black"
+                    className="h-12 w-12 text-green-600"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -329,7 +375,7 @@ useEffect(() => {
                 transition={{ delay: 0.4 }}
                 className="text-4xl md:text-6xl font-bold mb-4"
               >
-                {thankYouTitle}
+                Thank You!
               </motion.h1>
               <motion.p
                 initial={{ opacity: 0, y: 20 }}
@@ -337,7 +383,7 @@ useEffect(() => {
                 transition={{ delay: 0.6 }}
                 className="text-lg md:text-xl"
               >
-                {thankYouMessage}
+                Your request has been submitted successfully.
               </motion.p>
               <motion.p
                 initial={{ opacity: 0, y: 20 }}
@@ -352,51 +398,32 @@ useEffect(() => {
         )}
       </AnimatePresence>
 
-      {/* Form Modal */}
-      {showFormPopup && !showThankYou && (
-        <div
-          className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-70 p-4 z-[1000]"
-          onClick={handleBackdropClick}
-        >
-          <motion.div
-            id="contact-form-container"
-            initial={{ scale: 0.9, y: 50, opacity: 0 }}
-            animate={{ scale: 1, y: 0, opacity: 1 }}
-            exit={{ scale: 0.9, y: 50, opacity: 0 }}
-            className="bg-gray-900 rounded-2xl shadow-2xl max-w-lg w-full relative overflow-visible border border-[#FDB913]"
-            onClick={handleModalContentClick}
+      {/* Form Popup */}
+      <AnimatePresence>
+        {showFormPopup && !showThankYou && (
+          <div
+            className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 p-4 z-[1000]"
+            onClick={handleBackdropClick}
           >
-            <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 z-20">
-              <motion.div
-                initial={{ scale: 0, rotate: -180 }}
-                animate={{ scale: 1, rotate: 0 }}
-                transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-                className="bg-black p-4 rounded-full shadow-2xl border-4 border-white relative"
-              >
-                <Image
-                  src={logo}
-                  alt="Logo"
-                  width={50}
-                  height={50}
-                  className="rounded-full"
-                />
-                {/* Shine effect */}
-                <div className="absolute top-2 left-2 w-4 h-4 bg-white opacity-40 rounded-full blur-sm"></div>
-              </motion.div>
-            </div>
-
-            {/* Header Section with Gradient Background */}
-            <div className="bg-black text-white p-6 pb-8 pt-12 relative rounded-t-2xl">
+            <motion.div
+              id="hero-form-container"
+              initial={{ scale: 0.9, y: 50 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 50 }}
+              className="bg-gradient-to-br from-gray-900 to-black p-8 rounded-xl shadow-2xl border border-gray-700 max-w-md w-full relative"
+              onClick={handleModalContentClick}
+            >
               {/* Close Button */}
               <button
                 type="button"
-                onClick={handleClose}
-                className="absolute top-4 right-4 text-white/80 hover:text-[#FDB913] focus:outline-none focus:ring-2 focus:ring-[#FDB913]/50 rounded-full p-2 transition-all duration-200 hover:bg-gray-800 z-10"
+                
+                onClick={() => setShowFormPopup(false)}
+                className="absolute top-4 right-4 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-yellow-500 rounded-full p-1 transition-all duration-200 hover:bg-gray-700 z-10"
                 aria-label="Close form"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5"
+                  className="h-6 w-6"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -410,57 +437,44 @@ useEffect(() => {
                 </svg>
               </button>
 
-              {/* Content Section */}
-              <div className="text-center">
-                {/* Exclusive Deal Section */}
-                <div className="mb-3">
-                  <span className="bg-[#FDB913] text-black px-3 py-1 rounded-full text-sm font-bold inline-flex items-center gap-2">
-                    <FaClock className="text-xs" />
-                    Inaugural Offer
-                  </span>
-                </div>
-
-                <h2 className="text-2xl md:text-3xl font-bold mb-1 leading-tight text-[#FDB913]">
-                  {titleInfo.mainText}
-                </h2>
-
-                {titleInfo.price && (
-                  <div className="flex flex-col items-center gap-1 mb-2">
-                    <div className="text-2xl line-through text-gray-400">
-                      ₹9500/sq. yard
-                    </div>
-                    <div className="text-3xl md:text-4xl font-black text-white">
-                      {titleInfo.price}/sq. yard
-                    </div>
-                  </div>
-                )}
-
-                <p className="text-white/90 text-lg">
-                  {titleInfo.subText}
-                </p>
-
-                {titleInfo.timeLeft && (
-                  <div className="bg-[#FDB913] text-black px-4 py-2 rounded-lg inline-flex items-center gap-2 font-bold mb-6">
-                    <FaClock className="text-sm" />
-                    {formatTime(timeLeft)} left!
-                  </div>
-                )}
+              {/* Logo */}
+              <div className="absolute -top-10 left-1/2 transform -translate-x-1/2">
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: 0.2 }}
+                  className="bg-black p-2 rounded-full shadow-lg"
+                >
+                  <Image
+                    src={logo}
+                    alt="Logo"
+                    width={60}
+                    height={60}
+                    className="rounded-full"
+                  />
+                </motion.div>
               </div>
-            </div>
 
-            {/* Form Section */}
-            <div className="p-6 bg-white rounded-b-2xl">
-              {showSubmissionSuccess ? (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+                className="text-center mb-6 pt-4"
+              >
+                
+              </motion.div>
+
+              {showPopup ? (
                 <div className="text-center py-8">
                   <motion.div
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     className="mb-4 inline-block"
                   >
-                    <div className="w-16 h-16 bg-[#FDB913] rounded-full flex items-center justify-center mx-auto">
+                    <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        className="h-10 w-10 text-black"
+                        className="h-10 w-10 text-white"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -474,24 +488,18 @@ useEffect(() => {
                       </svg>
                     </div>
                   </motion.div>
-                  <h3 className="text-2xl font-bold text-[#FDB913] mb-2">
-                    Thank You!
-                  </h3>
-                  <p className="text-gray-800">
-                    Your request has been submitted successfully. We'll contact
-                    you shortly.
+                  <h3 className="text-2xl font-bold text-white mb-2">Thank You!</h3>
+                  <p className="text-gray-300">
+                    Your request has been submitted successfully. We'll contact you
+                    shortly.
                   </p>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-5">
                   {errorMessage && (
-                    <motion.div
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm"
-                    >
+                    <div className="p-3 bg-red-500 bg-opacity-20 border border-red-400 text-red-100 rounded-lg text-sm">
                       {errorMessage}
-                    </motion.div>
+                    </div>
                   )}
 
                   <motion.div
@@ -500,14 +508,14 @@ useEffect(() => {
                     transition={{ delay: 0.4 }}
                     className="relative"
                   >
-                    <FaUser className="absolute left-4 top-1/2 transform -translate-y-1/2 text-[#FDB913]" />
+                    <FaUser className="absolute left-4 top-1/2 transform -translate-y-1/2 text-yellow-400" />
                     <input
                       name="fullName"
-                      placeholder="Enter your full name"
+                      placeholder="Full Name"
                       value={formData.fullName}
                       onChange={handleChange}
                       required
-                      className="w-full p-3 pl-12 bg-gray-900 text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-[#FDB913] border border-gray-600 hover:border-[#FDB913] transition-colors"
+                      className="w-full p-4 pl-12 bg-gray-800 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 border border-gray-700 hover:border-yellow-400 transition-colors"
                     />
                   </motion.div>
 
@@ -517,17 +525,17 @@ useEffect(() => {
                     transition={{ delay: 0.5 }}
                     className="relative"
                   >
-                    <FaPhoneAlt className="absolute left-4 top-1/2 transform -translate-y-1/2 text-[#FDB913]" />
+                    <FaPhoneAlt className="absolute left-4 top-1/2 transform -translate-y-1/2 text-yellow-400" />
                     <input
                       name="phone"
                       type="tel"
-                      placeholder="Enter your phone number"
+                      placeholder="Phone Number"
                       value={formData.phone}
                       onChange={handleChange}
                       minLength="10"
                       maxLength="15"
                       required
-                      className="w-full p-3 pl-12 bg-gray-900 text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-[#FDB913] border border-gray-600 hover:border-[#FDB913] transition-colors"
+                      className="w-full p-4 pl-12 bg-gray-800 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 border border-gray-700 hover:border-yellow-400 transition-colors"
                     />
                   </motion.div>
 
@@ -543,33 +551,18 @@ useEffect(() => {
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     type="submit"
-                    id="popup"
                     disabled={isLoading || !recaptchaLoaded}
-                    className="w-full py-4 px-6 bg-[#FDB913] text-black rounded-xl hover:bg-[#FDB913]/90 transition-all shadow-lg hover:shadow-[#FDB913]/25 font-bold text-lg disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    id="hero-form"
+                    className="w-full py-3 px-6 bg-gradient-to-r from-yellow-500 to-yellow-600 text-black rounded-lg hover:from-yellow-600 hover:to-yellow-700 transition-all shadow-lg hover:shadow-yellow-500/20 font-semibold flex items-center justify-center disabled:opacity-70 disabled:cursor-not-allowed"
                   >
-                    {isLoading ? (
-                      <>
-                        <div className="w-5 h-5 border-2 border-black/30 border-t-black rounded-full animate-spin"></div>
-                        Verifying...
-                      </>
-                    ) : recaptchaLoaded ? (
-                      <>
-                        Talk To Investment Advisor
-                      </>
-                    ) : (
-                      "Loading..."
-                    )}
+                    {isLoading ? "Verifying..." : recaptchaLoaded ? "Talk To Investment Advisor" : "Loading..."}
                   </motion.button>
-
-                  <p className="text-xs text-gray-400 text-center">
-                    By submitting, you agree to receive calls/WhatsApp messages about our services
-                  </p>
                 </form>
               )}
-            </div>
-          </motion.div>
-        </div>
-      )}
-    </>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+    </div>
   );
 }

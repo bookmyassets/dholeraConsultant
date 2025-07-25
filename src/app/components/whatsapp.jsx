@@ -11,7 +11,7 @@ const FloatingButtons = () => {
       <div className="fixed bottom-0 left-0 w-full bg-white shadow-md p-3 flex justify-around lg:hidden z-50">
         {/* WhatsApp Button */}
         <a
-          href="https://wa.me/919971858408"
+          href="https://wa.me/918130371647"
           target="_blank"
           rel="noopener noreferrer"
           id="whatsapp-mobile"
@@ -21,7 +21,7 @@ const FloatingButtons = () => {
         </a>
         {/* Call Button */}
         <a
-          href="tel:+919971858408"
+          href="tel:+918130371647"
           className="flex items-center justify-center text-blue-500 text-lg font-semibold"
           id="call-now-mobile"
         >
