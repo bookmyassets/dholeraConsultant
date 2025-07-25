@@ -7,7 +7,7 @@ import { notFound } from "next/navigation";
 
 export async function generateMetadata({ params }) {
   const { slug } = await params;
-  const site = "top-deals-dholera";
+  const site = "dholera-consultants";
   const post = await getPostBySlug(slug, site);
 
   if (!post) {
@@ -25,7 +25,7 @@ export async function generateMetadata({ params }) {
 
 export default async function Post({ params }) {
   const { slug } = await params;
-  const site = "bookmyassets";
+  const site = "dholera-consultants";
   const post = await getPostBySlug(slug, site);
 
   if (!post || !post.slug?.current) {
