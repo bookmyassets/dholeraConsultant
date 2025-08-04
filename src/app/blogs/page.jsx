@@ -10,7 +10,7 @@ export default async function Blogs() {
   // Get blog posts
   const blogs = await getblogs();
 
-  const site = "dholera-consultants";
+  const site = "dholera-consultant";
 
   return (
     <>

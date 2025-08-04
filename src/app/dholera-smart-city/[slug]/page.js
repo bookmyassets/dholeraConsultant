@@ -318,14 +318,14 @@ export default async function Post({ params }) {
         url: "https://www.bookmyassets.com/assets/images/logo.png",
       },
     },
-    url: `https://www.bookmyassets.com/dholera-sir/${post.slug.current}`,
-    mainEntityOfPage: `https://www.bookmyassets.com/dholera-sir/${post.slug.current}`,
+    url: `https://www.bookmyassets.com/dholera-smart-city/${post.slug.current}`,
+    mainEntityOfPage: `https://www.bookmyassets.com/dholera-smart-city/${post.slug.current}`,
     datePublished: post.publishedAt,
     dateModified: post._updatedAt || post.publishedAt,
     description: post.metaDescription,
   };
 
-  const canonicalUrl = `https://www.bookmyassets.com/dholera-sir/${post.slug.current}`;
+  const canonicalUrl = `https://www.bookmyassets.com/dholera-smart-city/${post.slug.current}`;
 
   return (
     <div className="bg-gray-50 min-h-screen">
