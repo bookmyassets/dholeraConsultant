@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 
-import { MapPin, Mail, Phone, Facebook, Twitter, Instagram, Linkedin, ArrowRight, Users, Building2, Trophy, CheckCircle } from "lucide-react";
+import { MapPin, Mail, Phone, Facebook, Twitter, Instagram, Linkedin, ArrowRight, Users, Building2, Trophy, CheckCircle, Youtube } from "lucide-react";
 
 const Footer = () => {
   return (
@@ -111,16 +111,16 @@ const Footer = () => {
                   </h4>
                   <div className="flex space-x-3">
                     <a 
-                      href="https://www.facebook.com/share/1AXGEEX1M8/" 
+                      href="https://www.youtube.com/@DholeraConsultants" 
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="group relative bg-gray-800 hover:bg-blue-600 p-3 rounded-xl transition-all duration-300 transform hover:scale-110 hover:rotate-3"
+                      className="group relative bg-gray-800 hover:bg-red-600 p-3 rounded-xl transition-all duration-300 transform hover:scale-110 hover:rotate-3"
                     >
-                      <Facebook size={20} className="text-gray-400 group-hover:text-white transition-colors" />
-                      <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-blue-400 rounded-xl blur opacity-0 group-hover:opacity-75 transition duration-300 -z-10"></div>
+                      <Youtube size={20} className="text-gray-400 group-hover:text-white transition-colors" />
+                      <div className="absolute -inset-1 bg-gradient-to-r from-red-600 to-red-400 rounded-xl blur opacity-0 group-hover:opacity-75 transition duration-300 -z-10"></div>
                     </a>
                     <a 
-                      href="https://x.com/BookMyAssets" 
+                      href="https://x.com/DholeraC31285" 
                       target="_blank"
                       rel="noopener noreferrer"
                       className="group relative bg-gray-800 hover:bg-sky-500 p-3 rounded-xl transition-all duration-300 transform hover:scale-110 hover:rotate-3"
@@ -129,22 +129,13 @@ const Footer = () => {
                       <div className="absolute -inset-1 bg-gradient-to-r from-sky-500 to-sky-400 rounded-xl blur opacity-0 group-hover:opacity-75 transition duration-300 -z-10"></div>
                     </a>
                     <a 
-                      href="https://www.instagram.com/bookmyassets/" 
+                      href="https://www.instagram.com/dholeraconsultants/" 
                       target="_blank"
                       rel="noopener noreferrer"
                       className="group relative bg-gray-800 hover:bg-pink-600 p-3 rounded-xl transition-all duration-300 transform hover:scale-110 hover:rotate-3"
                     >
                       <Instagram size={20} className="text-gray-400 group-hover:text-white transition-colors" />
                       <div className="absolute -inset-1 bg-gradient-to-r from-pink-600 to-purple-400 rounded-xl blur opacity-0 group-hover:opacity-75 transition duration-300 -z-10"></div>
-                    </a>
-                    <a 
-                      href="https://www.linkedin.com/company/bookmyassetss" 
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="group relative bg-gray-800 hover:bg-blue-700 p-3 rounded-xl transition-all duration-300 transform hover:scale-110 hover:rotate-3"
-                    >
-                      <Linkedin size={20} className="text-gray-400 group-hover:text-white transition-colors" />
-                      <div className="absolute -inset-1 bg-gradient-to-r from-blue-700 to-blue-500 rounded-xl blur opacity-0 group-hover:opacity-75 transition duration-300 -z-10"></div>
                     </a>
                   </div>
                 </div>
@@ -166,15 +157,7 @@ const Footer = () => {
                       <span className="group-hover:ml-1 transition-all">Our Projects</span>
                     </Link>
                   </li>
-                  <li>
-                    <Link
-                      href="/services"
-                      className="text-gray-300 hover:text-blue-400 transition-all duration-300 flex items-center group"
-                    >
-                      <ArrowRight size={14} className="mr-2 text-blue-400 group-hover:translate-x-1 transition-transform" />
-                      <span className="group-hover:ml-1 transition-all">Our Services</span>
-                    </Link>
-                  </li>
+                  
                   <li>
                     <Link
                       href="/blogs"
