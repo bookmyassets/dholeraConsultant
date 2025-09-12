@@ -222,13 +222,13 @@ export default function Navbar() {
                         Enquire Now
                       </button>
                       <a
-                        href="tel:+918130371647"
+                        href="tel:+919971858408"
                         className="block px-4 py-2 text-gray-800 hover:bg-gray-100 transition-colors font-medium"
                       >
                         Call Now
                       </a>
                       <a
-                        href="https://wa.me/918130371647"
+                        href="https://wa.me/919971858408"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="block px-4 py-2 text-gray-800 hover:bg-gray-100 transition-colors font-medium"
