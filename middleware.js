@@ -2,35 +2,39 @@
 import { NextResponse } from 'next/server'
 
 export function middleware(request) {
+  // Get hostname
   const hostname = request.headers.get('host')
-  const { pathname } = request.nextUrl
   
-  console.log('🔥 MIDDLEWARE TRIGGERED')
-  console.log('Host:', hostname)
-  console.log('Path:', pathname)
-  console.log('Full URL:', request.url)
+  console.log('=== MIDDLEWARE START ===')
+  console.log('Hostname:', hostname)
+  console.log('URL:', request.url)
+  console.log('Method:', request.method)
   
-  // Debug: Log all headers
-  console.log('All Headers:', Object.fromEntries(request.headers.entries()))
-  
-  if (hostname?.includes('searchdholera')) {
-    console.log('✅ SUBDOMAIN MATCH - REWRITING TO /search-dholera')
+  // Check if it's the subdomain
+  if (hostname === 'searchdholera.dholeraconsultants.com') {
+    console.log('✅ SUBDOMAIN DETECTED!')
+    
+    // Clone the URL
     const url = request.nextUrl.clone()
+    
+    // Set new pathname
     url.pathname = '/search-dholera'
     
-    const response = NextResponse.rewrite(url)
-    response.headers.set('x-middleware-rewrite', '/search-dholera')
-    return response
+    console.log('Rewriting to:', url.pathname)
+    console.log('=== MIDDLEWARE END ===')
+    
+    // Return rewrite
+    return NextResponse.rewrite(url)
   }
   
-  console.log('❌ No subdomain match')
+  console.log('❌ Not subdomain, passing through')
+  console.log('=== MIDDLEWARE END ===')
+  
+  // Continue to next
   return NextResponse.next()
 }
 
-// Force runtime and matcher
+// Simple matcher
 export const config = {
-  matcher: [
-    '/((?!api|_next/static|_next/image|favicon.ico).*)',
-  ],
-  runtime: 'edge', // Force edge runtime
+  matcher: ['/((?!_next|api|favicon.ico).*)']
 }
