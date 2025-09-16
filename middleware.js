@@ -1,25 +1,36 @@
-// middleware.js (ROOT LEVEL - not in app folder)
+// middleware.js (ROOT LEVEL)
 import { NextResponse } from 'next/server'
 
 export function middleware(request) {
   const hostname = request.headers.get('host')
-  const url = request.nextUrl.clone()
+  const { pathname } = request.nextUrl
   
-  // Force log every request
-  console.log('🔥 MIDDLEWARE RUNNING:', hostname, url.pathname)
+  console.log('🔥 MIDDLEWARE TRIGGERED')
+  console.log('Host:', hostname)
+  console.log('Path:', pathname)
+  console.log('Full URL:', request.url)
   
-  // Exact match check
-  if (hostname === 'searchdholera.dholeraconsultants.com') {
-    console.log('✅ SUBDOMAIN DETECTED - REWRITING')
+  // Debug: Log all headers
+  console.log('All Headers:', Object.fromEntries(request.headers.entries()))
+  
+  if (hostname?.includes('searchdholera')) {
+    console.log('✅ SUBDOMAIN MATCH - REWRITING TO /search-dholera')
+    const url = request.nextUrl.clone()
     url.pathname = '/search-dholera'
-    return NextResponse.rewrite(url)
+    
+    const response = NextResponse.rewrite(url)
+    response.headers.set('x-middleware-rewrite', '/search-dholera')
+    return response
   }
   
-  console.log('❌ Normal request, passing through')
+  console.log('❌ No subdomain match')
   return NextResponse.next()
 }
 
-// Apply to ALL routes
+// Force runtime and matcher
 export const config = {
-  matcher: '/:path*'
+  matcher: [
+    '/((?!api|_next/static|_next/image|favicon.ico).*)',
+  ],
+  runtime: 'edge', // Force edge runtime
 }
