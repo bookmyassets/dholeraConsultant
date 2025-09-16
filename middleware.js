@@ -1,46 +1,25 @@
-// middleware.js (root level mein rakhna hai)
+// middleware.js (ROOT LEVEL - not in app folder)
 import { NextResponse } from 'next/server'
 
 export function middleware(request) {
+  const hostname = request.headers.get('host')
   const url = request.nextUrl.clone()
-  const hostname = request.headers.get('host') || ''
   
-  // Debug logs (Vercel function logs mein dikhega)
-  console.log('=== MIDDLEWARE DEBUG ===')
-  console.log('Hostname:', hostname)
-  console.log('Pathname:', url.pathname)
-  console.log('Full URL:', request.url)
-
-  // Multiple checks for subdomain
-  const isSearchDholera = 
-    hostname === 'searchdholera.bma.com' || 
-    hostname.includes('searchdholera') ||
-    hostname.startsWith('searchdholera.')
-
-  if (isSearchDholera) {
-    console.log('✅ SUBDOMAIN MATCHED! Rewriting...')
-    
-    // Root path handle karo
-    if (url.pathname === '/') {
-      url.pathname = '/search-dholera'
-    } else {
-      url.pathname = `/search-dholera${url.pathname}`
-    }
-    
-    console.log('Rewriting to:', url.pathname)
+  // Force log every request
+  console.log('🔥 MIDDLEWARE RUNNING:', hostname, url.pathname)
+  
+  // Exact match check
+  if (hostname === 'searchdholera.dholeraconsultants.com') {
+    console.log('✅ SUBDOMAIN DETECTED - REWRITING')
+    url.pathname = '/search-dholera'
     return NextResponse.rewrite(url)
   }
-
-  console.log('❌ No subdomain match, continuing...')
+  
+  console.log('❌ Normal request, passing through')
   return NextResponse.next()
 }
 
-// Simplified matcher
+// Apply to ALL routes
 export const config = {
-  matcher: [
-    /*
-     * Match all request paths except static files
-     */
-    '/((?!_next/static|_next/image|favicon.ico).*)',
-  ],
+  matcher: '/:path*'
 }
