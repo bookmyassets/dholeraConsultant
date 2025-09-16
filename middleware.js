@@ -1,22 +1,31 @@
-// app/middleware.js
+// middleware.js (root level mein rakhna hai, app folder mein nahi)
 import { NextResponse } from 'next/server'
 
-export function middleware(req) {
-  const url = req.nextUrl.clone()
-  const host = req.headers.get('host') || ''
+export function middleware(request) {
+  const url = request.nextUrl.clone()
+  const hostname = request.headers.get('host') || ''
 
-  // example: searchDholera.bma.com
-  if (host.startsWith('searchdholera.')) {
-    // rewrite to an internal path where your "slice" lives
+  console.log('Middleware triggered for:', hostname) // debugging ke liye
+
+  // Check for searchdholera subdomain
+  if (hostname.startsWith('searchdholera.')) {
+    console.log('Subdomain matched, rewriting to /search-dholera')
     url.pathname = `/search-dholera${url.pathname}`
     return NextResponse.rewrite(url)
   }
 
-  // otherwise do nothing (normal site)
   return NextResponse.next()
 }
 
-// apply middleware to all routes (or restrict via matcher)
 export const config = {
-  matcher: ['/:path*']
+  matcher: [
+    /*
+     * Match all request paths except for the ones starting with:
+     * - api (API routes)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     */
+    '/((?!api|_next/static|_next/image|favicon.ico).*)',
+  ],
 }
