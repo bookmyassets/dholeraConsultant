@@ -38,7 +38,7 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="pt-16"> {/* Add padding to account for fixed nav */}
+      <div className="pt-20 -z-20 "> {/* Add padding to account for fixed nav */}
         <div>
           <section id="hero">
             <LandingPage

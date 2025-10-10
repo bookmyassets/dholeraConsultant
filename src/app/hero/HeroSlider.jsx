@@ -157,10 +157,10 @@ export default function LandingPage({ img1, mimg1, openForm }) {
             fields: {
               name: formData.fullName,
               phone: formData.phone,
-              source: "Top Deals Dholera Google Ads",
+              source: "Dholera Consultants",
             },
-            source: "Top Deals Dholera Google Ads",
-            tags: ["Dholera Investment", "Website Lead", "Top Deals Dholera"],
+            source: "Dholera Consultants",
+            tags: ["Dholera Investment", "Website Lead", "Dholera Consultants"],
             recaptchaToken: token,
           }),
         }
@@ -296,7 +296,7 @@ export default function LandingPage({ img1, mimg1, openForm }) {
       {/* Background Images */}
       <div className="">
         {/* Desktop Image */}
-        <div className="absolute inset-0 hidden lg:block">
+        <div className="absolute inset-0 hidden lg:block ">
           <Image src={img1} alt="Investment Opportunity" className="w-full" priority />
           <div className="absolute inset-0 bg-black opacity-20"></div> {/* Black Overlay */}
         </div>
